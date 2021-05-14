@@ -6,7 +6,6 @@ import { debounce } from 'lodash';
 /**
  * WordPress dependencies
  */
-
 import {
 	PanelBody,
 	QueryControls,
@@ -20,13 +19,7 @@ import {
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
-import { addQueryArgs } from '@wordpress/url';
-import {
-	useEffect,
-	useState,
-	useCallback,
-	createInterpolateElement,
-} from '@wordpress/element';
+import { useEffect, useState, useCallback } from '@wordpress/element';
 import { store as coreStore } from '@wordpress/core-data';
 
 /**
@@ -41,25 +34,10 @@ const stickyOptions = [
 	{ label: __( 'Only' ), value: 'only' },
 ];
 
-const CreateNewPostLink = ( { type } ) => {
-	const newPostUrl = addQueryArgs( 'post-new.php', {
-		post_type: type,
-	} );
-	return (
-		<div className="wp-block-query__create-new-link">
-			{ createInterpolateElement(
-				__( '<a>Create a new post</a> for this feed.' ),
-				// eslint-disable-next-line jsx-a11y/anchor-has-content
-				{ a: <a href={ newPostUrl } /> }
-			) }
-		</div>
-	);
-};
-
 export default function QueryInspectorControls( {
-	attributes: { query, layout },
+	attributes: { query, displayLayout },
 	setQuery,
-	setLayout,
+	setDisplayLayout,
 } ) {
 	const {
 		order,
@@ -171,7 +149,6 @@ export default function QueryInspectorControls( {
 
 	return (
 		<InspectorControls>
-			<CreateNewPostLink type={ postType } />
 			<PanelBody title={ __( 'Settings' ) }>
 				<ToggleControl
 					label={ __( 'Inherit query from URL' ) }
@@ -189,18 +166,18 @@ export default function QueryInspectorControls( {
 						onChange={ onPostTypeChange }
 					/>
 				) }
-				{ layout?.type === 'flex' && (
+				{ displayLayout?.type === 'flex' && (
 					<>
 						<RangeControl
 							label={ __( 'Columns' ) }
-							value={ layout.columns }
+							value={ displayLayout.columns }
 							onChange={ ( value ) =>
-								setLayout( { columns: value } )
+								setDisplayLayout( { columns: value } )
 							}
 							min={ 2 }
-							max={ Math.max( 6, layout.columns ) }
+							max={ Math.max( 6, displayLayout.columns ) }
 						/>
-						{ layout.columns > 6 && (
+						{ displayLayout.columns > 6 && (
 							<Notice status="warning" isDismissible={ false }>
 								{ __(
 									'This column count exceeds the recommended amount and may cause visual breakage.'

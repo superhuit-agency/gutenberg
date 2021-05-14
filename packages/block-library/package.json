@@ -27,6 +27,7 @@
 	"sideEffects": [
 		"build-style/**",
 		"src/**/*.scss",
+		"src/query/index.js",
 		"src/navigation-link/index.js"
 	],
 	"dependencies": {
