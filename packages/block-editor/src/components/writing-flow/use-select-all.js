@@ -17,7 +17,11 @@ import { useRefEffect } from '@wordpress/compose';
 import { store as blockEditorStore } from '../../store';
 
 export default function useSelectAll() {
-	const { getBlockOrder } = useSelect( blockEditorStore );
+	const {
+		getBlockOrder,
+		getSelectedBlockClientIds,
+		getBlockRootClientId,
+	} = useSelect( blockEditorStore );
 	const { multiSelect } = useDispatch( blockEditorStore );
 
 	return useRefEffect( ( node ) => {
@@ -26,8 +30,23 @@ export default function useSelectAll() {
 				isKeyboardEvent.primary( event, 'a' ) &&
 				isEntirelySelected( event.target )
 			) {
-				const blocks = getBlockOrder();
-				multiSelect( first( blocks ), last( blocks ) );
+				const selectedClientIds = getSelectedBlockClientIds();
+
+				if ( ! selectedClientIds.length ) {
+					return;
+				}
+
+				const [ firstClientId ] = selectedClientIds;
+				const rootClientId = getBlockRootClientId( firstClientId );
+				let blockClientIds = getBlockOrder( rootClientId );
+
+				if ( selectedClientIds.length === blockClientIds.length ) {
+					blockClientIds = getBlockOrder(
+						getBlockRootClientId( rootClientId )
+					);
+				}
+
+				multiSelect( first( blockClientIds ), last( blockClientIds ) );
 				event.preventDefault();
 			}
 		}
